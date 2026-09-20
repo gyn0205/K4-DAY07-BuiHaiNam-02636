@@ -1,8 +1,8 @@
 # Báo Cáo Nhóm — Lab 7: Embedding & Vector Store
 
-**Nhóm:** [Tên nhóm]
-**Thành viên:** [Họ tên từng thành viên]
-**Ngày:** [Ngày nộp]
+**Nhóm:** LaoGaKho
+**Thành viên:** Bùi Hải Nam, [các thành viên còn lại]
+**Ngày:** 20/9/2026
 
 > **Nộp 1 bản / nhóm.** Phần cá nhân (hướng tiếp cận, kết quả riêng, dự đoán…) mỗi thành viên nộp riêng trong `REPORT_CANHAN.md`. Chi tiết thang điểm: `docs/SCORING.md`.
 
@@ -60,12 +60,26 @@ Chạy `ChunkingStrategyComparator().compare()` trên 2-3 tài liệu:
 
 > Mỗi thành viên điền một khối dưới đây (copy thêm nếu nhóm có nhiều hơn 3 người).
 
-**Thành viên 1 — [Tên]**
-- **Loại chiến lược:** [FixedSize / Sentence / Recursive / custom]
-- **Mô tả & lý do chọn cho chủ đề này:** *(2-3 câu)*
+**Thành viên 1 — Bùi Hải Nam**
+- **Loại chiến lược:** Custom — `RecursiveChunker(chunk_size=1200)` kết hợp bước gộp các mảnh ngắn liền kề (`merge_small_chunks`, bật bằng `python bench.py --merge`).
+- **Mô tả & lý do chọn cho chủ đề này:** Các trang chính sách đã crawl có nhiều dòng menu, tiêu đề và câu ngắn, nên `RecursiveChunker` gốc (tách theo từng đoạn, không gộp lại) tạo ra 1695 chunk chỉ dài 18–137 ký tự, ví dụ "Linh kiện máy tính...", không chứa điều khoản hay con số cần tìm. Bước gộp nối các mảnh liên tiếp trong cùng tài liệu cho tới khi gần đạt 1200 ký tự, giữ nguyên thứ tự đọc để điều kiện, thời hạn và ngoại lệ nằm cùng một chunk. Kết quả còn 62 chunk dài khoảng 1.100 ký tự.
 - **Code snippet (nếu custom):**
 ```python
-# Dán mã nguồn (implementation) vào đây
+def merge_small_chunks(pieces: list[str], max_chars: int) -> list[str]:
+    """Gộp các mảnh liên tiếp cho tới khi gần đạt max_chars để mỗi chunk giữ được ngữ cảnh."""
+    merged: list[str] = []
+    current = ""
+    for piece in pieces:
+        if current and len(current) + len(piece) + 1 > max_chars:
+            merged.append(current)
+            current = ""
+        current = f"{current}\n{piece}".strip()
+    if current:
+        merged.append(current)
+    return merged
+
+# chunks = RecursiveChunker(chunk_size=1200).chunk(content)
+# chunks = merge_small_chunks(chunks, 1200)
 ```
 
 **Thành viên 2 — [Tên]**
@@ -82,7 +96,7 @@ Chạy `ChunkingStrategyComparator().compare()` trên 2-3 tài liệu:
 
 | Thành viên | Chiến lược (Strategy) | Điểm truy xuất (/10) | Điểm mạnh | Điểm yếu |
 |-----------|----------|----------------------|-----------|----------|
-| | | | | |
+| Bùi Hải Nam | Recursive 1200 + gộp mảnh ngắn | 7 (tự chấm; embedder từ khóa, chưa có LLM thật) | Top-3 chứa đủ ý chính của gold answer ở 4/5 câu (baseline chỉ 1,33 điểm phủ trên 5 câu); chunk dài ~1.100 ký tự nên đáp án nằm trọn trong chunk | Chunk lớn nên có thể lẫn nhiều chủ đề; Q3 chỉ được 1/3 ý vì phần hóa đơn điện tử nằm ở mục hỏi đáp cuối trang, cách xa bảng chiết khấu |
 | | | | | |
 | | | | | |
 
