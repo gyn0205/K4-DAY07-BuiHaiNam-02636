@@ -1,0 +1,136 @@
+[!] Không dùng được LocalEmbedder (We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.).
+[!] Dùng LexicalEmbedder (từ khóa, offline) thay cho MockEmbedder vốn không có ngữ nghĩa.
+================================================================================
+ BÀI LAB 07 (K4-L3B) — ĐÁNH GIÁ TRUY XUẤT VÀ LỌC METADATA TRÊN CORPUS THỰC TẾ
+================================================================================
+[*] sources.csv khai báo 6 file Markdown trong C:\AIACTION\LAB7\K4-DAY07-BuiHaiNam-02636\data\ecommerce:
+    - [cellphones-apple-unboxing] (4,352 ký tự) -> 4 chunks | audience: buyer
+    - [cellphones-b2b-seller] (11,747 ký tự) -> 11 chunks | audience: seller
+    - [cellphones-extended-warranty] (10,852 ký tự) -> 9 chunks | audience: buyer
+    - [cellphones-shipping-policy] (14,392 ký tự) -> 13 chunks | audience: buyer
+    - [dienthoaivui-repair-warranty] (23,100 ký tự) -> 19 chunks | audience: buyer
+    - [tnc-store-warranty] (7,199 ký tự) -> 6 chunks | audience: buyer
+
+[+] Tổng số chunk tạo ra: 62
+[+] Mô hình Embedding: Lexical hashed bag-of-words (unigram+bigram, offline)
+[+] Mô hình LLM Generator: Mock LLM Fallback
+[+] Đã nạp thành công 62 chunks vào EmbeddingStore
+
+================================================================================
+ TIẾN HÀNH CHẠY KIỂM CHỨNG 5 CÂU HỎI BENCHMARK
+================================================================================
+
+--- [CÂU HỎI 1] ---
+❓ Câu hỏi:       Khách hàng có được mở seal hộp iPhone kiểm tra trước khi thanh toán không?
+🎯 Metadata lọc:   Không lọc (Toàn bộ kho)
+⭐ Câu trả lời mẫu: Khách hàng phải thanh toán 100% trước khi mở seal hộp sản phẩm Apple; chỉ mở hộp kiểm tra sau khi đã thanh toán.
+  • Top-3 doc_id: ['cellphones-shipping-policy', 'cellphones-apple-unboxing', 'cellphones-b2b-seller'] | chứa tài liệu đích (cellphones-apple-unboxing): CÓ
+  • Độ dài 3 chunk: [1074, 918, 1087] | ý chính của đáp án chuẩn có trong top-3: 1/1 ['thanh toán 100%']
+
+  [Top-1 Retrieval Result]
+  • Chunk ID:     cellphones-shipping-policy_c9-33
+  • Điểm Score:   0.2908
+  • Thuộc file:   cellphones-shipping-policy (Audience: buyer, Category: shipping-policy)
+  • Đoạn trích:   "Mình mua tivi thanh toán khi nhận hàng, mà cũng phải cọc trước 500k đúng ko Phản hồi Thu gọn phản hồi Quản trị viên QTV 1 tháng trước Cellph..."
+
+  🤖 Agent Answer: Dựa trên tài liệu quy định và chính sách của cửa hàng:
+
+Mình mua tivi thanh toán khi nhận hàng, mà cũng phải cọc trước 500k đúng ko Phản hồi Thu gọn phản hồi Quản trị viên QTV
+
+--- [CÂU HỎI 2] ---
+❓ Câu hỏi:       Thay pin Macbook tại Điện Thoại Vui được bảo hành bao lâu và bảo hành những lỗi gì?
+🎯 Metadata lọc:   Không lọc (Toàn bộ kho)
+⭐ Câu trả lời mẫu: Bảo hành 1 đổi 1 trong 12 tháng, bảo hành lỗi pin chai, báo ảo, sạc không vào, sập nguồn và cả trường hợp pin phồng.
+  • Top-3 doc_id: ['dienthoaivui-repair-warranty', 'dienthoaivui-repair-warranty', 'dienthoaivui-repair-warranty'] | chứa tài liệu đích (dienthoaivui-repair-warranty): CÓ
+  • Độ dài 3 chunk: [1102, 1155, 1185] | ý chính của đáp án chuẩn có trong top-3: 3/3 ['12 tháng', 'pin chai', 'phồng']
+
+  [Top-1 Retrieval Result]
+  • Chunk ID:     dienthoaivui-repair-warranty_c0-37
+  • Điểm Score:   0.3233
+  • Thuộc file:   dienthoaivui-repair-warranty (Audience: buyer, Category: warranty-policy)
+  • Đoạn trích:   "# Chính sách bảo hành sửa chữa thiết bị Điện Thoại Vui Chính Sách Bảo Hành sửa chữa tại hệ thống Điện Thoại Vui CHÍNH SÁCH BẢO HÀNH CHÍNH SÁ..."
+
+  🤖 Agent Answer: Dựa trên tài liệu quy định và chính sách của cửa hàng:
+
+Chính sách bảo hành sửa chữa thiết bị Điện Thoại Vui Chính Sách Bảo Hành sửa chữa tại hệ thống Điện Thoại Vui CHÍNH SÁCH BẢO HÀNH CHÍNH SÁCH BẢO HÀNH Đầu tiên, Điện Thoại Vui rất lấy làm tiếc vì sự bất tiện của Quý khách khi sản phẩm không may phát sinh lỗi phải bảo hành. Hệ thống hi vọng những thông tin chi tiết về chính sách bảo hành - đổi trả tại Điện Thoại Vui dưới đây sẽ giúp ích cho nhu cầu của Quý khách.
+
+--- [CÂU HỎI 3] ---
+❓ Câu hỏi:       Doanh nghiệp mua số lượng lớn có chính sách chiết khấu và xuất hóa đơn VAT như thế nào?
+🎯 Metadata lọc:   {'audience': 'seller'}
+⭐ Câu trả lời mẫu: Chính sách chiết khấu riêng theo ngành hàng đến 8%, mức giảm thêm tăng theo giá trị đơn (0-50 triệu, 50-100 triệu, 100-200 triệu, từ 200 triệu). CellphoneS dùng hóa đơn điện tử nên không xuất hóa đơn trước khi giao hàng; sẽ cung cấp Hợp đồng, Giấy đề nghị thanh toán để làm hồ sơ thanh toán.
+  • Top-3 doc_id: ['cellphones-b2b-seller', 'cellphones-b2b-seller', 'cellphones-b2b-seller'] | chứa tài liệu đích (cellphones-b2b-seller): CÓ
+  • Độ dài 3 chunk: [1193, 1132, 1087] | ý chính của đáp án chuẩn có trong top-3: 1/3 ['đến 8%']
+
+  [Top-1 Retrieval Result]
+  • Chunk ID:     cellphones-b2b-seller_c0-4
+  • Điểm Score:   0.2558
+  • Thuộc file:   cellphones-b2b-seller (Audience: seller, Category: b2b-sales-policy)
+  • Đoạn trích:   "# Chính sách bán hàng doanh nghiệp và đối tác B2B Khách hàng doanh nghiệp - Mua số lượng lớn ưu đãi giá tốt TRỞ THÀNH KHÁCH HÀNG DOANH NGHIỆ..."
+
+  🤖 Agent Answer: Dựa trên tài liệu quy định và chính sách của cửa hàng:
+
+Chính sách bán hàng doanh nghiệp và đối tác B2B Khách hàng doanh nghiệp - Mua số lượng lớn ưu đãi giá tốt TRỞ THÀNH KHÁCH HÀNG DOANH NGHIỆP CÙNG CELLPHONES CellphoneS - Chuỗi bán lẻ lớn hàng đầu, chính hãng, giá cạnh tranh, thanh toán linh hoạt
+
+--- [CÂU HỎI 4] ---
+❓ Câu hỏi:       Điều kiện để linh kiện máy tính được đổi mới tại TNC Store là gì?
+🎯 Metadata lọc:   Không lọc (Toàn bộ kho)
+⭐ Câu trả lời mẫu: Đổi mới 100% trong 3 năm đầu với CPU/SSD/RAM và trong 6 tháng đầu với nguồn, tản nhiệt, mainboard, HDD, VGA; quyết định đổi trả dựa theo đánh giá của TNC Store (phần trăm xước, độ mới). Không bảo hành nếu mất tem/phiếu bảo hành, cháy nổ, rơi vỡ, móp, nứt, trầy xước.
+  • Top-3 doc_id: ['tnc-store-warranty', 'tnc-store-warranty', 'dienthoaivui-repair-warranty'] | chứa tài liệu đích (tnc-store-warranty): CÓ
+  • Độ dài 3 chunk: [1164, 1200, 1186] | ý chính của đáp án chuẩn có trong top-3: 3/3 ['3 năm', '6 tháng', 'đánh giá của TNC']
+
+  [Top-1 Retrieval Result]
+  • Chunk ID:     tnc-store-warranty_c3-59
+  • Điểm Score:   0.2587
+  • Thuộc file:   tnc-store-warranty (Audience: buyer, Category: warranty-policy)
+  • Đoạn trích:   "Chính Sách Bảo Hành Đổi Mới Lên Tới 3 Năm Chỉ Có Tại TNC Store Chính Sách Bảo Hành Đổi Mới Lên Tới 3 Năm Chỉ Có Tại TNC Store I. Chính sách ..."
+
+  🤖 Agent Answer: Dựa trên tài liệu quy định và chính sách của cửa hàng:
+
+Chính Sách Bảo Hành Đổi Mới Lên Tới 3 Năm Chỉ Có Tại TNC Store Chính Sách Bảo Hành Đổi Mới Lên Tới 3 Năm Chỉ Có Tại TNC Store I. Chính sách bảo hành Chương trình bảo hành đổi mới dành cho tất cả những khách hàng mua các dòng sản phẩm tại TNC Store từ ngày 01/12/2024. 1. Đối với CPU - SSD - RAM
+
+--- [CÂU HỎI 5] ---
+❓ Câu hỏi:       Gói bảo hành mở rộng rơi vỡ vào nước tại CellphoneS có những quyền lợi gì?
+🎯 Metadata lọc:   Không lọc (Toàn bộ kho)
+⭐ Câu trả lời mẫu: Gói bảo hành rơi vỡ, rơi nước (12 tháng) tặng gói 1 đổi 1 VIP, không giới hạn số lần đổi máy, hỗ trợ tới 90% chi phí sửa chữa khi rơi vỡ/vào nước; nếu không sửa được, CellphoneS đổi sản phẩm cũ chất lượng tương đương.
+  • Top-3 doc_id: ['cellphones-extended-warranty', 'cellphones-extended-warranty', 'cellphones-extended-warranty'] | chứa tài liệu đích (cellphones-extended-warranty): CÓ
+  • Độ dài 3 chunk: [1196, 1161, 1115] | ý chính của đáp án chuẩn có trong top-3: 3/3 ['90%', '1 đổi 1 VIP', 'tương đương']
+
+  [Top-1 Retrieval Result]
+  • Chunk ID:     cellphones-extended-warranty_c0-15
+  • Điểm Score:   0.3343
+  • Thuộc file:   cellphones-extended-warranty (Audience: buyer, Category: warranty-policy)
+  • Đoạn trích:   "# Dịch vụ và biểu phí bảo hành mở rộng rơi vỡ vào nước Dịch vụ bảo hành mở rộng | Gói bảo vệ toàn diện giá tốt Smember Vui lòng đăng nhập tà..."
+
+  🤖 Agent Answer: Dựa trên tài liệu quy định và chính sách của cửa hàng:
+
+Dịch vụ và biểu phí bảo hành mở rộng rơi vỡ vào nước Dịch vụ bảo hành mở rộng | Gói bảo vệ toàn diện giá tốt Smember Vui lòng đăng nhập tài khoản Smember để . Đăng ký
+
+================================================================================
+ MINH CHỨNG HIỆU QUẢ CỦA METADATA FILTERING (Câu 3: Bán sỉ Doanh nghiệp)
+================================================================================
+
+1. KHI KHÔNG LỌC METADATA:
+   Top-1: [cellphones-b2b-seller] (audience=seller) -> score=0.2558
+   Top-2: [cellphones-b2b-seller] (audience=seller) -> score=0.2156
+   Top-3: [cellphones-b2b-seller] (audience=seller) -> score=0.2103
+
+2. KHI CÓ LỌC METADATA (audience='seller'):
+   Top-1: [cellphones-b2b-seller] (audience=seller) -> score=0.2558
+   Top-2: [cellphones-b2b-seller] (audience=seller) -> score=0.2156
+   Top-3: [cellphones-b2b-seller] (audience=seller) -> score=0.2103
+   ==> Đã loại bỏ hoàn toàn các tài liệu dành cho khách hàng cá nhân (buyer), chỉ giữ lại chính sách B2B của đối tác!
+
+================================================================================
+ CHUNKING: RecursiveChunker + gộp mảnh nhỏ (--merge) | 62 chunk
+ TỔNG KẾT: 5/5 câu có chunk của tài liệu đích trong top-3
+ Độ phủ ý chính của đáp án chuẩn trong top-3: 4.33/5 câu
+   Q1: CÓ | top1=cellphones-shipping-policy, top3=['cellphones-shipping-policy', 'cellphones-apple-unboxing', 'cellphones-b2b-seller'], ý chính trong top-3: 1/1
+   Q2: CÓ | top1=dienthoaivui-repair-warranty, top3=['dienthoaivui-repair-warranty', 'dienthoaivui-repair-warranty', 'dienthoaivui-repair-warranty'], ý chính trong top-3: 3/3
+   Q3: CÓ | top1=cellphones-b2b-seller, top3=['cellphones-b2b-seller', 'cellphones-b2b-seller', 'cellphones-b2b-seller'], ý chính trong top-3: 1/3
+   Q4: CÓ | top1=tnc-store-warranty, top3=['tnc-store-warranty', 'tnc-store-warranty', 'dienthoaivui-repair-warranty'], ý chính trong top-3: 3/3
+   Q5: CÓ | top1=cellphones-extended-warranty, top3=['cellphones-extended-warranty', 'cellphones-extended-warranty', 'cellphones-extended-warranty'], ý chính trong top-3: 3/3
+
+================================================================================
+ HOÀN TẤT KIỂM CHỨNG 5 CÂU HỎI BENCHMARK VÀ LỌC METADATA
+================================================================================
